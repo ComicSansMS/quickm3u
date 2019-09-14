@@ -8,7 +8,8 @@ MainWindow::MainWindow()
     :m_centralWidget(new CentralWidget(this))
 {
     setWindowTitle("QuickM3U");
-    show();
+
+    setCentralWidget(m_centralWidget);
 }
 
 }
