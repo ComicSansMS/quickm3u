@@ -7,17 +7,22 @@
 #include <QWidget>
 #pragma warning(pop)
 
+class QAbstractItemModel;
+
 namespace ui {
 
-class ListWidget;
+class ListView;
 
 class CentralWidget : public QWidget {
     Q_OBJECT
 private:
     QVBoxLayout m_layout;
-    ListWidget* m_list;
+    ListView* m_list;
 public:
     CentralWidget(QWidget* parent);
+
+    void setModel(QAbstractItemModel* model);
+    ListView* fileList() const;
 };
 
 }

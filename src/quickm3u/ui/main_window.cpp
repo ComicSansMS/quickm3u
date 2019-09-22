@@ -20,6 +20,7 @@ MainWindow::MainWindow()
     setWindowTitle("QuickM3U");
     addToolBar(m_toolbar);
 
+    m_centralWidget->setModel(m_model);
     setCentralWidget(m_centralWidget);
     m_centralWidget->setEnabled(false);
 
@@ -58,6 +59,7 @@ void MainWindow::dropEvent(QDropEvent* evt)
     if (isM3UDrop(evt)) {
         evt->acceptProposedAction();
         m_model->openFile(evt->mimeData()->urls().first().toLocalFile());
+        m_centralWidget->setEnabled(true);
     } else {
         evt->ignore();
     }

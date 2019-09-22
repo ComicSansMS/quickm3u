@@ -42,7 +42,7 @@ set(QUICKM3U_HEADER_FILES
 
 set(QUICKM3U_QT_SOURCE_FILES
     ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/central_widget.cpp
-    ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/list_widget.cpp
+    ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/list_view.cpp
     ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/m3u_file_model.cpp
     ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/main_window.cpp
 )
@@ -52,7 +52,7 @@ set(QUICKM3U_QT_HEADER_FILES
 
 set(QUICKM3U_QT_MOC_HEADER_FILES
     ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/central_widget.hpp
-    ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/list_widget.hpp
+    ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/list_view.hpp
     ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/m3u_file_model.hpp
     ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/main_window.hpp
 )

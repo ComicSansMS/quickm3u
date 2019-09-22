@@ -17,11 +17,19 @@ private:
 public:
     M3UFileModel(QObject* parent);
 
-    int rowCount(QModelIndex const& index) const override;
+    Qt::ItemFlags flags(QModelIndex const& index) const override;
+    int rowCount(QModelIndex const& parent) const override;
     QVariant data(QModelIndex const& index, int role) const override;
+    bool setData(QModelIndex const& index, QVariant const& value, int role) override;
+    bool insertRows(int row, int count, QModelIndex const& parent) override;
+    bool removeRows(int row, int count, QModelIndex const& parent) override;
+    Qt::DropActions supportedDropActions() const override;
+    bool dropMimeData(QMimeData const* data, Qt::DropAction action,
+                      int row, int column, QModelIndex const& parent) override;
 
 public slots:
     void openFile(QString const& path);
+    void newFile();
 };
 
 }
