@@ -19,7 +19,7 @@ add_link_options($<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++>)
 
 set(QT5_BASE_ROOT "" CACHE PATH "Qt5 installation root directory.")
 find_package(Qt5 REQUIRED COMPONENTS Widgets
-    HINTS ${QT5_BASE_ROOT} $ENV{QT5_ROOT}/5.12.2/msvc2017_64 $ENV{QT5_ROOT}/5.12.0/msvc2017_64
+    HINTS ${QT5_BASE_ROOT} $ENV{QT5_ROOT}/msvc2015 $ENV{QT5_ROOT}/msvc2015_64 $ENV{QT5_ROOT}/msvc2017 $ENV{QT5_ROOT}/msvc2017_64
 )
 
 set(GHULBUS_BASE_ROOT "" CACHE PATH "GhulbusBase installation root directory.")

@@ -24,6 +24,8 @@ public:
     bool insertRows(int row, int count, QModelIndex const& parent) override;
     bool removeRows(int row, int count, QModelIndex const& parent) override;
     Qt::DropActions supportedDropActions() const override;
+    QStringList mimeTypes() const override;
+    QMimeData* mimeData(QModelIndexList const& indices) const override;
     bool dropMimeData(QMimeData const* data, Qt::DropAction action,
                       int row, int column, QModelIndex const& parent) override;
 

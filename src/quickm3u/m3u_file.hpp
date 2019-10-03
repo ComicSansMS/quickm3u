@@ -3,6 +3,8 @@
 
 #include <chrono>
 #include <filesystem>
+#include <istream>
+#include <ostream>
 #include <vector>
 
 struct M3UEntry {
@@ -18,7 +20,9 @@ struct M3UFile {
 };
 
 M3UFile m3u_load(std::filesystem::path const& p);
-M3UFile m3u_save(std::filesystem::path const& p);
-M3UFile m3u_save_as_extended(std::filesystem::path const& p);
+M3UFile m3u_load(std::istream& is);
+void m3u_save(M3UFile const& m3u);
+void m3u_save(M3UFile const& m3u, std::ostream& os);
+void m3u_save_as_extended(M3UFile const& m3u, std::filesystem::path const& p);
 
 #endif

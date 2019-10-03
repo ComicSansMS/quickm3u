@@ -5,14 +5,20 @@
 
 M3UFile m3u_load(std::filesystem::path const& p)
 {
-    M3UFile ret;
-    ret.filename = p;
     std::ifstream fin(p);
+    M3UFile ret = m3u_load(fin);
+    ret.filename = p;
+    return ret;
+}
+
+M3UFile m3u_load(std::istream& is)
+{
+    M3UFile ret;
     std::string line;
     bool is_first_line = true;
     bool is_extended = false;
     M3UEntry entry;
-    while (std::getline(fin, line)) {
+    while (std::getline(is, line)) {
         if (line.starts_with("#")) {
             if (is_first_line) {
                 if (line == "#EXTM3U") {
@@ -40,5 +46,17 @@ M3UFile m3u_load(std::filesystem::path const& p)
     return ret;
 }
 
-M3UFile m3u_save(std::filesystem::path const& p);
-M3UFile m3u_save_as_extended(std::filesystem::path const& p);
+void m3u_save(M3UFile const& m3u)
+{
+    std::ofstream fout(m3u.filename);
+    m3u_save(m3u, fout);
+}
+
+void m3u_save(M3UFile const& m3u, std::ostream& os)
+{
+    for (auto const& p : m3u.entries) {
+        os << p.path << '\n';
+    }
+}
+
+void m3u_save_as_extended(M3UFile const& m3u, std::filesystem::path const& p);
