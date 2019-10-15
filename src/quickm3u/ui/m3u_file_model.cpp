@@ -6,6 +6,8 @@
 #pragma warning(pop)
 #include <QMimeData>
 
+#include <unordered_set>
+
 namespace ui {
 
 M3UFileModel::M3UFileModel(QObject* parent)
@@ -91,13 +93,17 @@ QMimeData* M3UFileModel::mimeData(QModelIndexList const& indices) const
 
     QByteArray encodedData;
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
+    std::size_t n_indices = std::count_if(indices.begin(), indices.end(),
+                                          [](QModelIndex const& index) { return index.isValid(); });
+    stream << n_indices;
     for (QModelIndex const& index : indices) {
         if (index.isValid()) {
-            M3UEntry const& entry = m_file.entries[index.row()];
-            stream << QString::fromStdU16String(entry.path.u16string());
-            stream << entry.runtime.count();
-            stream << QString::fromStdString(entry.artist);
-            stream << QString::fromStdString(entry.title);
+            stream << index.row();
+            //M3UEntry const& entry = m_file.entries[index.row()];
+            //stream << QString::fromStdU16String(entry.path.u16string());
+            //stream << entry.runtime.count();
+            //stream << QString::fromStdString(entry.artist);
+            //stream << QString::fromStdString(entry.title);
         }
     }
 
@@ -112,12 +118,47 @@ bool M3UFileModel::dropMimeData(QMimeData const* data, Qt::DropAction action,
         if (parent.isValid()) {
             row = parent.row();
         } else if (row == -1) {
-            row = m_file.entries.size();
+            row = static_cast<int>(m_file.entries.size());
+        }
+        QByteArray raw_data = data->data("application/quickm3u.m3uentry");
+        if (!raw_data.isEmpty()) {
+            QDataStream stream(&raw_data, QIODevice::ReadOnly);
+            std::size_t n_indices;
+            stream >> n_indices;
+            std::vector<int> source_rows(n_indices);
+            for (int i = 0; i < n_indices; ++i) {
+                stream >> source_rows[i];
+            }
+            return gatherRows(source_rows.data(), source_rows.size(), row);
         }
         bool ret = QAbstractListModel::dropMimeData(data, action, row, column, QModelIndex{});
         return ret;
     }
     return false;
+}
+
+bool M3UFileModel::gatherRows(int* source_rows_ptr, std::size_t source_rows_size, int destination_row)
+{
+    std::size_t const n_elements = m_file.entries.size();
+    std::vector<int> indices(n_elements);
+    std::iota(begin(indices), end(indices), 0);
+    std::unordered_set<int> source_indices;
+    for (std::size_t i = 0; i < source_rows_size; ++i) { source_indices.insert(source_rows_ptr[i]); }
+    std::stable_partition(begin(indices), begin(indices) + destination_row,
+        [&source_indices](int i) { return !source_indices.contains(i); });
+    std::stable_partition(begin(indices) + destination_row, end(indices),
+        [&source_indices](int i) { return source_indices.contains(i); });
+
+    beginResetModel();
+    auto const old_entries = std::move(m_file.entries);
+    m_file.entries.clear();
+    m_file.entries.reserve(n_elements);
+    for (auto const& i : indices) {
+        m_file.entries.push_back(std::move(old_entries[i]));
+    }
+    endResetModel();
+
+    return true;
 }
 
 void M3UFileModel::openFile(QString const& path)

@@ -28,6 +28,7 @@ public:
     QMimeData* mimeData(QModelIndexList const& indices) const override;
     bool dropMimeData(QMimeData const* data, Qt::DropAction action,
                       int row, int column, QModelIndex const& parent) override;
+    bool gatherRows(int* source_rows_ptr, std::size_t source_rows_size, int destination_row);
 
 public slots:
     void openFile(QString const& path);

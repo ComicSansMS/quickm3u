@@ -61,12 +61,19 @@ void ListView::dragLeaveEvent(QDragLeaveEvent* evt)
 void ListView::dropEvent(QDropEvent* evt)
 {
     if (evt->mimeData()->hasUrls()) {
-        /// @todo
         for (auto const& url : evt->mimeData()->urls()) {
-            //addItem(url.toLocalFile());
+            addItem(url.toLocalFile());
         }
     }
     return QListView::dropEvent(evt);
+}
+
+void ListView::addItem(QString item)
+{
+    QAbstractItemModel* m = model();
+    int const row = m->rowCount();
+    m->insertRow(row);
+    m->setData(m->index(row, 0), item, Qt::DisplayRole);
 }
 
 }

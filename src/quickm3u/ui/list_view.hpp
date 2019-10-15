@@ -18,6 +18,9 @@ public:
 
     void removeSelectedItems();
 
+public slots:
+    void addItem(QString item);
+
 protected:
     void dragEnterEvent(QDragEnterEvent* evt) override;
     void dragMoveEvent(QDragMoveEvent* evt) override;
