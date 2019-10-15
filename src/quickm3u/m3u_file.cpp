@@ -3,6 +3,30 @@
 #include <fstream>
 #include <string>
 
+void to_relative_path(std::filesystem::path const& root, M3UEntry& entry)
+{
+    auto const& p = entry.path;
+    auto [it_root, it_p] = std::mismatch(root.begin(), root.end(), p.begin(), p.end());
+
+    std::filesystem::path rel_path;
+    if (it_root != root.end()) { ++it_root; }
+    for (; it_root != root.end(); ++it_root) { rel_path /= ".."; }
+
+    for (; it_p != p.end(); ++it_p) { rel_path /= *it_p; }
+    entry.path.assign(std::move(rel_path));
+}
+
+void to_absolute_path(std::filesystem::path const& root, M3UEntry& entry)
+{
+    auto const& p = entry.path;
+    std::filesystem::path abs_path = root;
+    auto it = p.begin();
+    for (; (it != p.end()) && (*it == ".."); ++it) { abs_path = abs_path.parent_path(); }
+    for (; it != p.end(); ++it) { abs_path /= *it; }
+
+    entry.path.assign(std::move(abs_path));
+}
+
 M3UFile m3u_load(std::filesystem::path const& p)
 {
     std::ifstream fin(p);
@@ -60,3 +84,21 @@ void m3u_save(M3UFile const& m3u, std::ostream& os)
 }
 
 void m3u_save_as_extended(M3UFile const& m3u, std::filesystem::path const& p);
+
+void m3u_convert_to_relative_paths(M3UFile& m3u)
+{
+    std::filesystem::path root = m3u.filename;
+    root.remove_filename();
+    for (auto& e : m3u.entries) {
+        to_relative_path(root, e);
+    }
+}
+
+void m3u_convert_to_absolute_paths(M3UFile& m3u)
+{
+    std::filesystem::path root = m3u.filename;
+    root.remove_filename();
+    for (auto& e : m3u.entries) {
+        to_absolute_path(root, e);
+    }
+}

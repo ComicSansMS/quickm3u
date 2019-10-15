@@ -99,11 +99,6 @@ QMimeData* M3UFileModel::mimeData(QModelIndexList const& indices) const
     for (QModelIndex const& index : indices) {
         if (index.isValid()) {
             stream << index.row();
-            //M3UEntry const& entry = m_file.entries[index.row()];
-            //stream << QString::fromStdU16String(entry.path.u16string());
-            //stream << entry.runtime.count();
-            //stream << QString::fromStdString(entry.artist);
-            //stream << QString::fromStdString(entry.title);
         }
     }
 
@@ -149,6 +144,7 @@ bool M3UFileModel::gatherRows(int* source_rows_ptr, std::size_t source_rows_size
     std::stable_partition(begin(indices) + destination_row, end(indices),
         [&source_indices](int i) { return source_indices.contains(i); });
 
+    /// @todo consider use of beginMoveRows() here
     beginResetModel();
     auto const old_entries = std::move(m_file.entries);
     m_file.entries.clear();
@@ -172,6 +168,20 @@ void M3UFileModel::newFile()
 {
     beginResetModel();
     m_file = M3UFile{};
+    endResetModel();
+}
+
+void M3UFileModel::convertToRelativePaths()
+{
+    beginResetModel();
+    m3u_convert_to_relative_paths(m_file);
+    endResetModel();
+}
+
+void M3UFileModel::convertToAbsolutePaths()
+{
+    beginResetModel();
+    m3u_convert_to_absolute_paths(m_file);
     endResetModel();
 }
 

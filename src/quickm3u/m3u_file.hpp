@@ -24,5 +24,7 @@ M3UFile m3u_load(std::istream& is);
 void m3u_save(M3UFile const& m3u);
 void m3u_save(M3UFile const& m3u, std::ostream& os);
 void m3u_save_as_extended(M3UFile const& m3u, std::filesystem::path const& p);
+void m3u_convert_to_relative_paths(M3UFile& m3u);
+void m3u_convert_to_absolute_paths(M3UFile& m3u);
 
 #endif

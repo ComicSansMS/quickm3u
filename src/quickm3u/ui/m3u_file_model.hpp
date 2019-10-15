@@ -33,6 +33,8 @@ public:
 public slots:
     void openFile(QString const& path);
     void newFile();
+    void convertToRelativePaths();
+    void convertToAbsolutePaths();
 };
 
 }
