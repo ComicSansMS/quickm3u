@@ -31,8 +31,9 @@ public:
     bool gatherRows(int* source_rows_ptr, std::size_t source_rows_size, int destination_row);
 
 public slots:
+    void newFile(QString const& path);
     void openFile(QString const& path);
-    void newFile();
+    void saveFile();
     void convertToRelativePaths();
     void convertToAbsolutePaths();
 };

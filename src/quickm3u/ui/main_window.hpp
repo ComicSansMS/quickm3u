@@ -19,11 +19,20 @@ private:
     CentralWidget* m_centralWidget;
     QToolBar* m_toolbar;
     M3UFileModel* m_model;
+    struct Actions {
+        QAction* save = nullptr;
+    } m_actions;
 public:
     MainWindow();
 
+signals:
+    void fileChanged();
+
 public slots:
     void onNewFile();
+    void onOpenFile();
+    void onSaveFile();
+    void onFileChanged();
 
 protected:
     void dragEnterEvent(QDragEnterEvent* evt) override;
@@ -32,6 +41,7 @@ protected:
     void dropEvent(QDropEvent* evt) override;
 private:
     bool isM3UDrop(QDropEvent* evt);
+    void doOpenFile(QString const& path);
     void createActions();
 };
 

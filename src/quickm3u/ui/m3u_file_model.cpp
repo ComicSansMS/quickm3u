@@ -157,6 +157,14 @@ bool M3UFileModel::gatherRows(int* source_rows_ptr, std::size_t source_rows_size
     return true;
 }
 
+void M3UFileModel::newFile(QString const& path)
+{
+    beginResetModel();
+    m_file = M3UFile{};
+    m_file.filename = path.toStdU16String();
+    endResetModel();
+}
+
 void M3UFileModel::openFile(QString const& path)
 {
     beginResetModel();
@@ -164,11 +172,9 @@ void M3UFileModel::openFile(QString const& path)
     endResetModel();
 }
 
-void M3UFileModel::newFile()
+void M3UFileModel::saveFile()
 {
-    beginResetModel();
-    m_file = M3UFile{};
-    endResetModel();
+    m3u_save(m_file);
 }
 
 void M3UFileModel::convertToRelativePaths()

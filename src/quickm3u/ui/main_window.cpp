@@ -6,6 +6,7 @@
 #pragma warning(push)
 #pragma warning(disable: 4251)
 #include <QDropEvent>
+#include <QFileDialog>
 #include <QFileInfo>
 #include <QMenuBar>
 #include <QMimeData>
@@ -28,14 +29,39 @@ MainWindow::MainWindow()
 
     createActions();
 
-    resize(400, 200);
+    resize(800, 400);
 
     setAcceptDrops(true);
+
+    connect(this, &MainWindow::fileChanged, this, &MainWindow::onFileChanged);
 }
 
 void MainWindow::onNewFile()
 {
+    auto const target_file = QFileDialog::getSaveFileName(this, tr("New M3U File"), QString(),
+                                                          tr("M3U File") + " (*.m3u *.m3u8)");
+    m_model->newFile(target_file);
+    emit fileChanged();
+}
+
+void MainWindow::onOpenFile()
+{
+    auto const target_file = QFileDialog::getOpenFileName(this, tr("Open M3U File"), QString(),
+                                                          tr("M3U File") + " (*.m3u *.m3u8)");
+    if (!target_file.isEmpty()) {
+        doOpenFile(target_file);
+    }
+}
+
+void MainWindow::onSaveFile()
+{
+    m_model->saveFile();
+}
+
+void MainWindow::onFileChanged()
+{
     m_centralWidget->setEnabled(true);
+    m_actions.save->setEnabled(true);
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent* evt)
@@ -62,8 +88,7 @@ void MainWindow::dropEvent(QDropEvent* evt)
 {
     if (isM3UDrop(evt)) {
         evt->acceptProposedAction();
-        m_model->openFile(evt->mimeData()->urls().first().toLocalFile());
-        m_centralWidget->setEnabled(true);
+        doOpenFile(evt->mimeData()->urls().first().toLocalFile());
     } else {
         evt->ignore();
     }
@@ -87,6 +112,12 @@ bool MainWindow::isM3UDrop(QDropEvent* evt)
     return false;
 }
 
+void MainWindow::doOpenFile(QString const& path)
+{
+    m_model->openFile(path);
+    emit fileChanged();
+}
+
 void MainWindow::createActions()
 {
     QIcon const icon_new = QIcon::fromTheme("document-new");
@@ -94,22 +125,34 @@ void MainWindow::createActions()
     action_new->setShortcuts(QKeySequence::New);
     action_new->setStatusTip(tr("Create a new M3U file"));
     connect(action_new, &QAction::triggered, this, &MainWindow::onNewFile);
+    QIcon const icon_open = QIcon::fromTheme("document-open");
+    QAction* action_open = new QAction(icon_open, tr("&Open"), this);
+    action_open->setShortcuts(QKeySequence::Open);
+    action_open->setStatusTip(tr("Open an existing M3U file"));
+    connect(action_open, &QAction::triggered, this, &MainWindow::onOpenFile);
+    QIcon const icon_save = QIcon::fromTheme("document-save");
+    QAction* action_save = new QAction(icon_save, tr("&Save"), this);
+    action_save->setShortcut(QKeySequence::Save);
+    action_save->setStatusTip(tr("Save all changes"));
+    connect(action_save, &QAction::triggered, this, &MainWindow::onSaveFile);
+    m_actions.save = action_save;
+    action_save->setEnabled(false);
     QAction* action_exit = new QAction(tr("E&xit"), this);
     connect(action_exit, &QAction::triggered, this, &MainWindow::close);
     QAction* action_convert_relative = new QAction(tr("Convert to &Relative Paths"), this);
     connect(action_convert_relative, &QAction::triggered, m_model, &M3UFileModel::convertToRelativePaths);
     QAction* action_convert_absolute = new QAction(tr("Convert to &Absolute Paths"), this);
     connect(action_convert_absolute, &QAction::triggered, m_model, &M3UFileModel::convertToAbsolutePaths);
-    //fileMenu->addAction(newAct);
     m_toolbar->addAction(action_new);
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(action_new);
+    fileMenu->addAction(action_open);
+    fileMenu->addAction(action_save);
     fileMenu->addSeparator();
     fileMenu->addAction(action_exit);
     QMenu* editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(action_convert_relative);
     editMenu->addAction(action_convert_absolute);
-
 }
 
 }

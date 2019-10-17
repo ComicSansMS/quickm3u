@@ -71,7 +71,7 @@ void m3u_save(M3UFile const& m3u)
 void m3u_save(M3UFile const& m3u, std::ostream& os)
 {
     for (auto const& p : m3u.entries) {
-        os << p.path << '\n';
+        os << p.path.string() << '\n';
     }
 }
 
