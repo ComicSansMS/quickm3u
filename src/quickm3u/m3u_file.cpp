@@ -9,9 +9,7 @@ void to_relative_path(std::filesystem::path const& root, M3UEntry& entry)
     auto [it_root, it_p] = std::mismatch(root.begin(), root.end(), p.begin(), p.end());
 
     std::filesystem::path rel_path;
-    if (it_root != root.end()) { ++it_root; }
     for (; it_root != root.end(); ++it_root) { rel_path /= ".."; }
-
     for (; it_p != p.end(); ++it_p) { rel_path /= *it_p; }
     entry.path.assign(std::move(rel_path));
 }
@@ -88,17 +86,21 @@ void m3u_save_as_extended(M3UFile const& m3u, std::filesystem::path const& p);
 void m3u_convert_to_relative_paths(M3UFile& m3u)
 {
     std::filesystem::path root = m3u.filename;
-    root.remove_filename();
+    root = root.remove_filename().parent_path();
     for (auto& e : m3u.entries) {
-        to_relative_path(root, e);
+        if (e.path.is_absolute()) {
+            to_relative_path(root, e);
+        }
     }
 }
 
 void m3u_convert_to_absolute_paths(M3UFile& m3u)
 {
     std::filesystem::path root = m3u.filename;
-    root.remove_filename();
+    root = root.remove_filename().parent_path();
     for (auto& e : m3u.entries) {
-        to_absolute_path(root, e);
+        if (e.path.is_relative()) {
+            to_absolute_path(root, e);
+        }
     }
 }
