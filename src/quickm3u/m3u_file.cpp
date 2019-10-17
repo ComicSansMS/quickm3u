@@ -24,6 +24,7 @@ M3UFile m3u_load(std::filesystem::path const& p)
     std::ifstream fin(p);
     M3UFile ret = m3u_load(fin);
     ret.filename = p;
+    ret.filename.make_preferred();
     return ret;
 }
 

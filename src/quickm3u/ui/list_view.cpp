@@ -27,12 +27,13 @@ void ListView::keyPressEvent(QKeyEvent* evt)
 
 void ListView::removeSelectedItems()
 {
-    /// @todo
-    /*
-    for (QListViewItem* to_remove : selectedItems()) {
-        delete to_remove;
+    QModelIndexList indices = selectedIndexes();
+    std::sort(indices.begin(), indices.end(), [](QModelIndex const& lhs, QModelIndex const& rhs) {
+        return lhs.row() < rhs.row();
+    });
+    for (auto it = indices.rbegin(); it != indices.rend(); ++it) {
+        model()->removeRow(it->row());
     }
-    */
 }
 
 void ListView::dragEnterEvent(QDragEnterEvent* evt)

@@ -30,6 +30,10 @@ public:
                       int row, int column, QModelIndex const& parent) override;
     bool gatherRows(int* source_rows_ptr, std::size_t source_rows_size, int destination_row);
 
+    QString getFilename() const;
+    QString getFullPath() const;
+signals:
+    void pathChanged();
 public slots:
     void newFile(QString const& path);
     void openFile(QString const& path);

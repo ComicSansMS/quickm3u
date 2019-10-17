@@ -157,12 +157,24 @@ bool M3UFileModel::gatherRows(int* source_rows_ptr, std::size_t source_rows_size
     return true;
 }
 
+QString M3UFileModel::getFilename() const
+{
+    return QString::fromStdU16String(m_file.filename.filename().u16string());
+}
+
+QString M3UFileModel::getFullPath() const
+{
+    return QString::fromStdU16String(m_file.filename.u16string());
+}
+
 void M3UFileModel::newFile(QString const& path)
 {
     beginResetModel();
     m_file = M3UFile{};
     m_file.filename = path.toStdU16String();
+    m_file.filename.make_preferred();
     endResetModel();
+    emit pathChanged();
 }
 
 void M3UFileModel::openFile(QString const& path)
@@ -170,6 +182,7 @@ void M3UFileModel::openFile(QString const& path)
     beginResetModel();
     m_file = m3u_load(path.toStdU16String());
     endResetModel();
+    emit pathChanged();
 }
 
 void M3UFileModel::saveFile()

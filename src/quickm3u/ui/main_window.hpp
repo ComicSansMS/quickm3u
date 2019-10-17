@@ -25,14 +25,11 @@ private:
 public:
     MainWindow();
 
-signals:
-    void fileChanged();
-
 public slots:
     void onNewFile();
     void onOpenFile();
     void onSaveFile();
-    void onFileChanged();
+    void onPathChanged();
 
 protected:
     void dragEnterEvent(QDragEnterEvent* evt) override;

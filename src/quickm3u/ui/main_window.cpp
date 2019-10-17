@@ -33,7 +33,7 @@ MainWindow::MainWindow()
 
     setAcceptDrops(true);
 
-    connect(this, &MainWindow::fileChanged, this, &MainWindow::onFileChanged);
+    connect(m_model, &M3UFileModel::pathChanged, this, &MainWindow::onPathChanged);
 }
 
 void MainWindow::onNewFile()
@@ -41,7 +41,6 @@ void MainWindow::onNewFile()
     auto const target_file = QFileDialog::getSaveFileName(this, tr("New M3U File"), QString(),
                                                           tr("M3U File") + " (*.m3u *.m3u8)");
     m_model->newFile(target_file);
-    emit fileChanged();
 }
 
 void MainWindow::onOpenFile()
@@ -58,10 +57,12 @@ void MainWindow::onSaveFile()
     m_model->saveFile();
 }
 
-void MainWindow::onFileChanged()
+void MainWindow::onPathChanged()
 {
+    setWindowTitle("QuickM3U - " + m_model->getFilename());
     m_centralWidget->setEnabled(true);
     m_actions.save->setEnabled(true);
+    m_centralWidget->setFilePath(m_model->getFullPath());
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent* evt)
@@ -82,6 +83,7 @@ void MainWindow::dragMoveEvent(QDragMoveEvent* evt)
 
 void MainWindow::dragLeaveEvent(QDragLeaveEvent* evt)
 {
+    return QMainWindow::dragLeaveEvent(evt);
 }
 
 void MainWindow::dropEvent(QDropEvent* evt)
@@ -115,7 +117,6 @@ bool MainWindow::isM3UDrop(QDropEvent* evt)
 void MainWindow::doOpenFile(QString const& path)
 {
     m_model->openFile(path);
-    emit fileChanged();
 }
 
 void MainWindow::createActions()
@@ -138,12 +139,17 @@ void MainWindow::createActions()
     m_actions.save = action_save;
     action_save->setEnabled(false);
     QAction* action_exit = new QAction(tr("E&xit"), this);
+    action_exit->setShortcut(QKeySequence::Quit);
     connect(action_exit, &QAction::triggered, this, &MainWindow::close);
     QAction* action_convert_relative = new QAction(tr("Convert to &Relative Paths"), this);
     connect(action_convert_relative, &QAction::triggered, m_model, &M3UFileModel::convertToRelativePaths);
     QAction* action_convert_absolute = new QAction(tr("Convert to &Absolute Paths"), this);
     connect(action_convert_absolute, &QAction::triggered, m_model, &M3UFileModel::convertToAbsolutePaths);
+    QAction* action_about_qt = new QAction(tr("About &Qt..."));
+    QAction* action_about = new QAction(tr("&About..."));
+
     m_toolbar->addAction(action_new);
+    m_toolbar->hide();
     QMenu* fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(action_new);
     fileMenu->addAction(action_open);
@@ -153,6 +159,9 @@ void MainWindow::createActions()
     QMenu* editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(action_convert_relative);
     editMenu->addAction(action_convert_absolute);
+    QMenu* helpMenu = menuBar()->addMenu(tr("&Help"));
+    helpMenu->addAction(action_about_qt);
+    helpMenu->addAction(action_about);
 }
 
 }
