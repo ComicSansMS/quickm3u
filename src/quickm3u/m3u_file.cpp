@@ -5,13 +5,7 @@
 
 void to_relative_path(std::filesystem::path const& root, M3UEntry& entry)
 {
-    auto const& p = entry.path;
-    auto [it_root, it_p] = std::mismatch(root.begin(), root.end(), p.begin(), p.end());
-
-    std::filesystem::path rel_path;
-    for (; it_root != root.end(); ++it_root) { rel_path /= ".."; }
-    for (; it_p != p.end(); ++it_p) { rel_path /= *it_p; }
-    entry.path.assign(std::move(rel_path));
+    entry.path = entry.path.lexically_proximate(root);
 }
 
 void to_absolute_path(std::filesystem::path const& root, M3UEntry& entry)
@@ -22,7 +16,7 @@ void to_absolute_path(std::filesystem::path const& root, M3UEntry& entry)
     for (; (it != p.end()) && (*it == ".."); ++it) { abs_path = abs_path.parent_path(); }
     for (; it != p.end(); ++it) { abs_path /= *it; }
 
-    entry.path.assign(std::move(abs_path));
+    entry.path.assign(std::move(abs_path)).make_preferred();
 }
 
 M3UFile m3u_load(std::filesystem::path const& p)
