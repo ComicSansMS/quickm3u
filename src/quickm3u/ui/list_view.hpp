@@ -16,10 +16,10 @@ public:
 
     void keyPressEvent(QKeyEvent* evt) override;
 
-    void removeSelectedItems();
-
 public slots:
     void addItem(QString item);
+    void removeSelectedItems();
+    void invertSelection();
 
 protected:
     void dragEnterEvent(QDragEnterEvent* evt) override;

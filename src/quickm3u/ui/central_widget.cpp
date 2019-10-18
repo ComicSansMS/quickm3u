@@ -3,14 +3,27 @@
 #include <quickm3u/ui/list_view.hpp>
 
 #include <QLabel>
+#include <QPushButton>
 
 namespace ui {
 
 CentralWidget::CentralWidget(QWidget* parent)
-    :QWidget(parent), m_labelFilePath(new QLabel(this)), m_list(new ListView(this))
+    :QWidget(parent), m_labelFilePath(new QLabel(this)), m_list(new ListView(this)),
+     m_buttonAddFile(new QPushButton(tr("Add File"), this)),
+     m_buttonRemoveSelected(new QPushButton(tr("Remove Selected"), this)),
+     m_buttonInvertSelection(new QPushButton(tr("Invert Selection"), this))
 {
     m_layout.addWidget(m_labelFilePath);
     m_layout.addWidget(m_list);
+
+    m_layoutButtons.addWidget(m_buttonAddFile);
+    m_layoutButtons.addWidget(m_buttonRemoveSelected);
+    m_layoutButtons.addWidget(m_buttonInvertSelection);
+    m_layout.addLayout(&m_layoutButtons);
+
+    connect(m_buttonAddFile, &QPushButton::clicked, this, &CentralWidget::onAddFile);
+    connect(m_buttonRemoveSelected, &QPushButton::clicked, this, &CentralWidget::onRemoveSelected);
+    connect(m_buttonInvertSelection, &QPushButton::clicked, this, &CentralWidget::onInvertSelection);
 
     setLayout(&m_layout);
 }
@@ -28,6 +41,21 @@ void CentralWidget::setFilePath(QString const& file_path)
 ListView* CentralWidget::fileList() const
 {
     return m_list;
+}
+
+void CentralWidget::onAddFile()
+{
+    ///@todo
+}
+
+void CentralWidget::onRemoveSelected()
+{
+    m_list->removeSelectedItems();
+}
+
+void CentralWidget::onInvertSelection()
+{
+    m_list->invertSelection();
 }
 
 }

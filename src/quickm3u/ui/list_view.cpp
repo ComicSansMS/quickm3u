@@ -6,6 +6,8 @@
 #pragma warning(pop)
 #include <QMimeData>
 
+#include <algorithm>
+
 namespace ui {
 
 ListView::ListView(QWidget* parent)
@@ -34,6 +36,16 @@ void ListView::removeSelectedItems()
     for (auto it = indices.rbegin(); it != indices.rend(); ++it) {
         model()->removeRow(it->row());
     }
+}
+
+void ListView::invertSelection()
+{
+    /// @todo
+    QItemSelectionModel* const smodel = selectionModel();
+    QItemSelection selection = smodel->selection();
+    QAbstractItemModel* const imodel = model();
+    selection.select(imodel->index(0, 0), imodel->index(imodel->rowCount(), 0));
+    smodel->select(selection, QItemSelectionModel::SelectionFlag::Select);
 }
 
 void ListView::dragEnterEvent(QDragEnterEvent* evt)
