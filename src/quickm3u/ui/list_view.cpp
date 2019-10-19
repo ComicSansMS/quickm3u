@@ -1,9 +1,13 @@
 #include <quickm3u/ui/list_view.hpp>
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4251)
+#endif
 #include <QKeyEvent>
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 #include <QMimeData>
 
 #include <algorithm>

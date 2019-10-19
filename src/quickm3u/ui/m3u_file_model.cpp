@@ -1,9 +1,13 @@
 #include <quickm3u/ui/m3u_file_model.hpp>
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4251)
+#endif
 #include <QDataStream>
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 #include <QMimeData>
 
 #include <unordered_set>

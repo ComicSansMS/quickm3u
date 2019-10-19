@@ -4,8 +4,10 @@
 #include <quickm3u/ui/central_widget.hpp>
 #include <quickm3u/ui/m3u_file_model.hpp>
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4251)
+#endif
 #include <QDropEvent>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -13,7 +15,9 @@
 #include <QMimeData>
 #include <QStyle>
 #include <QToolBar>
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 namespace ui {
 

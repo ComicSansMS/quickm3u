@@ -1,10 +1,14 @@
 #ifndef INCLUDE_GUARD_QUICKM3U_UI_MAIN_WINDOW_HPP
 #define INCLUDE_GUARD_QUICKM3U_UI_MAIN_WINDOW_HPP
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 5054)
+#endif
 #include <QMainWindow>
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 class QToolBar;
 

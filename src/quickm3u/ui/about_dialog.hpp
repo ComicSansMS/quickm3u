@@ -1,18 +1,26 @@
 #ifndef INCLUDE_GUARD_QUICKM3U_UI_ABOUT_DIALOG_HPP_
 #define INCLUDE_GUARD_QUICKM3U_UI_ABOUT_DIALOG_HPP_
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 5054)
+#endif
 #include <QDialog>
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 #include <QLabel>
 #include <QPushButton>
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4251)
+#endif
 #include <QBoxLayout>
 #include <QPlainTextEdit>
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 namespace ui {
 

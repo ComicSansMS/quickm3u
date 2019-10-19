@@ -1,10 +1,14 @@
 #ifndef INCLUDE_GUARD_QUICKM3U_UI_LIST_VIEW_HPP_
 #define INCLUDE_GUARD_QUICKM3U_UI_LIST_VIEW_HPP_
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4251 5054)
+#endif
 #include <QListView>
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 namespace ui {
 
