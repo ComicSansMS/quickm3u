@@ -1,5 +1,6 @@
 #include <quickm3u/ui/main_window.hpp>
 
+#include <quickm3u/ui/about_dialog.hpp>
 #include <quickm3u/ui/central_widget.hpp>
 #include <quickm3u/ui/m3u_file_model.hpp>
 
@@ -15,6 +16,11 @@
 #pragma warning(pop)
 
 namespace ui {
+
+void MainWindow::Actions::setEnabled(bool enabled) {
+    save->setEnabled(enabled);
+    copy_to_directory->setEnabled(enabled);
+}
 
 MainWindow::MainWindow()
     :m_centralWidget(new CentralWidget(this)), m_toolbar(new QToolBar(this)),
@@ -57,12 +63,26 @@ void MainWindow::onSaveFile()
     m_model->saveFile();
 }
 
+void MainWindow::onCopyToDirectory()
+{
+    QString const destination = QFileDialog::getExistingDirectory(this, tr("Choose Destination Directory"), QString());
+    /// @todo
+}
+
 void MainWindow::onPathChanged()
 {
-    setWindowTitle("QuickM3U - " + m_model->getFilename());
-    m_centralWidget->setEnabled(true);
-    m_actions.save->setEnabled(true);
-    m_centralWidget->setFilePath(m_model->getFullPath());
+    QString new_path = m_model->getFullPath();
+    if (new_path.isEmpty()) {
+        setWindowTitle("QuickM3U");
+        m_centralWidget->setEnabled(false);
+        m_actions.setEnabled(false);
+        m_centralWidget->setFilePath(new_path);
+    } else {
+        setWindowTitle("QuickM3U - " + m_model->getFilename());
+        m_centralWidget->setEnabled(true);
+        m_actions.setEnabled(true);
+        m_centralWidget->setFilePath(new_path);
+    }
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent* evt)
@@ -122,15 +142,17 @@ void MainWindow::doOpenFile(QString const& path)
 void MainWindow::createActions()
 {
     QIcon const icon_new = QIcon::fromTheme("document-new");
-    QAction* action_new = new QAction(icon_new, tr("&New"), this);
+    QAction* action_new = new QAction(icon_new, tr("&New..."), this);
     action_new->setShortcuts(QKeySequence::New);
     action_new->setStatusTip(tr("Create a new M3U file"));
     connect(action_new, &QAction::triggered, this, &MainWindow::onNewFile);
+
     QIcon const icon_open = QIcon::fromTheme("document-open");
-    QAction* action_open = new QAction(icon_open, tr("&Open"), this);
+    QAction* action_open = new QAction(icon_open, tr("&Open..."), this);
     action_open->setShortcuts(QKeySequence::Open);
     action_open->setStatusTip(tr("Open an existing M3U file"));
     connect(action_open, &QAction::triggered, this, &MainWindow::onOpenFile);
+
     QIcon const icon_save = QIcon::fromTheme("document-save");
     QAction* action_save = new QAction(icon_save, tr("&Save"), this);
     action_save->setShortcut(QKeySequence::Save);
@@ -138,15 +160,23 @@ void MainWindow::createActions()
     connect(action_save, &QAction::triggered, this, &MainWindow::onSaveFile);
     m_actions.save = action_save;
     action_save->setEnabled(false);
+
+    QAction* action_copy_to_directory = new QAction(tr("Copy to &Directory..."), this);
+    action_copy_to_directory->setStatusTip("Copy all files from the list to a single directory");
+    connect(action_copy_to_directory, &QAction::triggered, this, &MainWindow::onCopyToDirectory);
+    m_actions.copy_to_directory = action_copy_to_directory;
+    action_copy_to_directory->setEnabled(false);
+
     QAction* action_exit = new QAction(tr("E&xit"), this);
     action_exit->setShortcut(QKeySequence::Quit);
     connect(action_exit, &QAction::triggered, this, &MainWindow::close);
+
     QAction* action_convert_relative = new QAction(tr("Convert to &Relative Paths"), this);
     connect(action_convert_relative, &QAction::triggered, m_model, &M3UFileModel::convertToRelativePaths);
     QAction* action_convert_absolute = new QAction(tr("Convert to &Absolute Paths"), this);
     connect(action_convert_absolute, &QAction::triggered, m_model, &M3UFileModel::convertToAbsolutePaths);
-    QAction* action_about_qt = new QAction(tr("About &Qt..."));
     QAction* action_about = new QAction(tr("&About..."));
+    connect(action_about, &QAction::triggered, this, [this]() { AboutDialog dlg(this); dlg.exec(); });
 
     m_toolbar->addAction(action_new);
     m_toolbar->hide();
@@ -155,12 +185,13 @@ void MainWindow::createActions()
     fileMenu->addAction(action_open);
     fileMenu->addAction(action_save);
     fileMenu->addSeparator();
+    fileMenu->addAction(action_copy_to_directory);
+    fileMenu->addSeparator();
     fileMenu->addAction(action_exit);
     QMenu* editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(action_convert_relative);
     editMenu->addAction(action_convert_absolute);
     QMenu* helpMenu = menuBar()->addMenu(tr("&Help"));
-    helpMenu->addAction(action_about_qt);
     helpMenu->addAction(action_about);
 }
 

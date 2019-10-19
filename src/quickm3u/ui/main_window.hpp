@@ -21,6 +21,8 @@ private:
     M3UFileModel* m_model;
     struct Actions {
         QAction* save = nullptr;
+        QAction* copy_to_directory = nullptr;
+        void setEnabled(bool enabled);
     } m_actions;
 public:
     MainWindow();
@@ -29,6 +31,7 @@ public slots:
     void onNewFile();
     void onOpenFile();
     void onSaveFile();
+    void onCopyToDirectory();
     void onPathChanged();
 
 protected:

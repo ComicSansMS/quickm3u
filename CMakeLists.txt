@@ -38,9 +38,11 @@ set(QUICKM3U_SOURCE_FILES
 
 set(QUICKM3U_HEADER_FILES
     ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/m3u_file.hpp
+    ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/version.hpp
 )
 
 set(QUICKM3U_QT_SOURCE_FILES
+    ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/about_dialog.cpp
     ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/central_widget.cpp
     ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/list_view.cpp
     ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/m3u_file_model.cpp
@@ -51,6 +53,7 @@ set(QUICKM3U_QT_HEADER_FILES
 )
 
 set(QUICKM3U_QT_MOC_HEADER_FILES
+    ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/about_dialog.hpp
     ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/central_widget.hpp
     ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/list_view.hpp
     ${QUICKM3U_SOURCE_DIRECTORY}/quickm3u/ui/m3u_file_model.hpp
@@ -62,10 +65,10 @@ source_group(moc FILES
     ${QUICKM3U_QT_MOC_SOURCE_FILES}
 )
 
-#qt5_add_resources(QUICKM3U_QT_RESOURCE_FILES ${PROJECT_SOURCE_DIR}/resources/quickm3u.qrc)
-#source_group(resources FILES
-#    ${QUICKM3U_QT_RESOURCE_FILES}
-#)
+qt5_add_resources(QUICKM3U_QT_RESOURCE_FILES ${PROJECT_SOURCE_DIR}/resources/quickm3u.qrc)
+source_group(resources FILES
+    ${QUICKM3U_QT_RESOURCE_FILES}
+)
 
 
 add_executable(quickm3u WIN32
