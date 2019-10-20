@@ -18,13 +18,6 @@ find_package(Qt5 REQUIRED COMPONENTS Widgets
     HINTS ${QT5_BASE_ROOT} $ENV{QT5_ROOT}/msvc2015 $ENV{QT5_ROOT}/msvc2015_64 $ENV{QT5_ROOT}/msvc2017 $ENV{QT5_ROOT}/msvc2017_64
 )
 
-set(GHULBUS_BASE_ROOT "" CACHE PATH "GhulbusBase installation root directory.")
-if(GHULBUS_BASE_ROOT)
-    list(APPEND CMAKE_PREFIX_PATH ${GHULBUS_BASE_ROOT}/cmake)
-endif()
-find_package(gbBase REQUIRED)
-
-
 set(QUICKM3U_SOURCE_DIRECTORY ${PROJECT_SOURCE_DIR}/src)
 
 set(QUICKM3U_SOURCE_FILES
