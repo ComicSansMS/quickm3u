@@ -47,6 +47,7 @@ bool M3UFileModel::setData(QModelIndex const& index, QVariant const& value, int 
         if ((role == Qt::DisplayRole) || (role == Qt::EditRole)) {
             m_file.entries[row_index] = M3UEntry{};
             m_file.entries[row_index].path = value.toString().toStdU16String();
+            m_file.entries[row_index].path.make_preferred();
             emit dataChanged(index, index);
         }
     }

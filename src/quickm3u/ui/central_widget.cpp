@@ -2,6 +2,14 @@
 
 #include <quickm3u/ui/list_view.hpp>
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+#include <QFileDialog>
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 #include <QLabel>
 #include <QPushButton>
 
@@ -45,7 +53,10 @@ ListView* CentralWidget::fileList() const
 
 void CentralWidget::onAddFiles()
 {
-    ///@todo
+    QStringList files = QFileDialog::getOpenFileNames(this, tr("Select one or more files to add"));
+    for (auto const& f : files) {
+        m_list->addItem(f);
+    }
 }
 
 void CentralWidget::onRemoveSelected()
