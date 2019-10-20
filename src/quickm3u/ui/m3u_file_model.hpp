@@ -52,6 +52,7 @@ public slots:
     void convertToAbsolutePaths();
     void undo();
     void redo();
+    void copyFilesToDirectory(QString destination_path);
 private:
     void saveState();
 };

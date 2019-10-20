@@ -74,7 +74,7 @@ void MainWindow::onSaveFile()
 void MainWindow::onCopyToDirectory()
 {
     QString const destination = QFileDialog::getExistingDirectory(this, tr("Choose Destination Directory"), QString());
-    /// @todo
+    m_model->copyFilesToDirectory(destination);
 }
 
 void MainWindow::onUndo()

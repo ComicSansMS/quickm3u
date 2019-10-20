@@ -2,9 +2,10 @@
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable: 4251)
+#pragma warning(disable: 4251 5054)
 #endif
 #include <QDataStream>
+#include <QMessageBox>
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -247,6 +248,68 @@ void M3UFileModel::redo()
     endResetModel();
     m_redoHistory.pop_back();
     emit historyChange(true, !m_redoHistory.empty());
+}
+
+void M3UFileModel::copyFilesToDirectory(QString destination_path)
+{
+    auto file = m_file;
+    m3u_convert_to_absolute_paths(file);
+    int const n_files = static_cast<int>(file.entries.size());
+    int n_digits = [](int n) {
+        int digits = 0;
+        while (n > 0) {
+            n /= 10;
+            ++digits;
+        }
+        return digits;
+    }(n_files);
+    int count = 0;
+    std::filesystem::path dest_dir = destination_path.toStdU16String();
+    std::vector<std::tuple<std::filesystem::path, std::filesystem::path>> to_copy;
+    bool overwrite = false;
+    bool skipped = false;
+    for (auto const& f : file.entries) {
+        auto const destination_file = dest_dir /
+            QString("%1 %2").arg(count, n_digits, 10, QLatin1Char('0')).arg(f.path.filename().u16string()).toStdU16String();
+        if (std::filesystem::exists(destination_file)) {
+            overwrite = true;
+        }
+        if (!std::filesystem::is_regular_file(f.path)) {
+            skipped = true;
+        } else {
+            to_copy.emplace_back(f.path, destination_file);
+        }
+        ++count;
+    }
+    if (overwrite) {
+        QMessageBox msg(QMessageBox::Question, tr("Some files will get overwritten."),
+            tr("Some existing files in the destination directory will get overwritten.\nDo you want to continue?"),
+            QMessageBox::Yes | QMessageBox::No);
+        if (msg.exec() == QMessageBox::No) {
+            return;
+        }
+    }
+    if (skipped) {
+        QMessageBox msg(QMessageBox::Question, tr("Some files cannot be copied."),
+            tr("Some entries cannot be copied.\nDo you want to continue?"),
+            QMessageBox::Yes | QMessageBox::No);
+        if (msg.exec() == QMessageBox::No) {
+            return;
+        }
+    }
+    bool errors_occurred = false;
+    for (auto const& [source, dest] : to_copy) {
+        std::error_code ec;
+        std::filesystem::copy_file(source, dest, std::filesystem::copy_options::overwrite_existing, ec);
+        if (ec) {
+            errors_occurred = true;
+        }
+    }
+    if (errors_occurred) {
+        QMessageBox msg(QMessageBox::Warning, tr("Some files could not be copied."),
+            tr("Some files could not be copied to the destination."), QMessageBox::Ok);
+        msg.exec();
+    }
 }
 
 void M3UFileModel::saveState()
