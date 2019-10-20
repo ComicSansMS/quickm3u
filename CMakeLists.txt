@@ -14,8 +14,13 @@ add_compile_options($<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++>)
 add_link_options($<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++>)
 
 set(QT5_BASE_ROOT "" CACHE PATH "Qt5 installation root directory.")
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(QT5_HINTS $ENV{QT5_ROOT}/msvc2017_64)
+elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    set(QT5_HINTS $ENV{QT5_ROOT}/msvc2017)
+endif()
 find_package(Qt5 REQUIRED COMPONENTS Widgets
-    HINTS ${QT5_BASE_ROOT} $ENV{QT5_ROOT}/msvc2015 $ENV{QT5_ROOT}/msvc2015_64 $ENV{QT5_ROOT}/msvc2017 $ENV{QT5_ROOT}/msvc2017_64
+    HINTS ${QT5_BASE_ROOT} ${QT5_HINTS}
 )
 
 set(QUICKM3U_SOURCE_DIRECTORY ${PROJECT_SOURCE_DIR}/src)
