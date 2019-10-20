@@ -26,6 +26,8 @@ private:
     struct Actions {
         QAction* save = nullptr;
         QAction* copy_to_directory = nullptr;
+        QAction* undo = nullptr;
+        QAction* redo = nullptr;
         void setEnabled(bool enabled);
     } m_actions;
 public:
@@ -36,6 +38,8 @@ public slots:
     void onOpenFile();
     void onSaveFile();
     void onCopyToDirectory();
+    void onUndo();
+    void onRedo();
     void onPathChanged();
 
 protected:

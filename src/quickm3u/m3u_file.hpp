@@ -12,11 +12,13 @@ struct M3UEntry {
     std::chrono::seconds runtime = std::chrono::seconds(0);
     std::string artist;
     std::string title;
+    bool operator==(M3UEntry const&) const = default;
 };
 
 struct M3UFile {
     std::filesystem::path filename;
     std::vector<M3UEntry> entries;
+    bool operator==(M3UFile const&) const = default;
 };
 
 M3UFile m3u_load(std::filesystem::path const& p);

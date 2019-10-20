@@ -44,6 +44,10 @@ MainWindow::MainWindow()
     setAcceptDrops(true);
 
     connect(m_model, &M3UFileModel::pathChanged, this, &MainWindow::onPathChanged);
+    connect(m_model, &M3UFileModel::historyChange, this, [this](bool can_undo, bool can_redo) {
+            m_actions.undo->setEnabled(can_undo);
+            m_actions.redo->setEnabled(can_redo);
+        });
 }
 
 void MainWindow::onNewFile()
@@ -71,6 +75,16 @@ void MainWindow::onCopyToDirectory()
 {
     QString const destination = QFileDialog::getExistingDirectory(this, tr("Choose Destination Directory"), QString());
     /// @todo
+}
+
+void MainWindow::onUndo()
+{
+    m_model->undo();
+}
+
+void MainWindow::onRedo()
+{
+    m_model->redo();
 }
 
 void MainWindow::onPathChanged()
@@ -175,6 +189,16 @@ void MainWindow::createActions()
     action_exit->setShortcut(QKeySequence::Quit);
     connect(action_exit, &QAction::triggered, this, &MainWindow::close);
 
+    QAction* action_undo = new QAction(tr("&Undo"), this);
+    action_undo->setShortcut(QKeySequence::Undo);
+    connect(action_undo, &QAction::triggered, this, &MainWindow::onUndo);
+    m_actions.undo = action_undo;
+
+    QAction* action_redo = new QAction(tr("&Redo"), this);
+    action_redo->setShortcut(QKeySequence::Redo);
+    connect(action_redo, &QAction::triggered, this, &MainWindow::onRedo);
+    m_actions.redo = action_redo;
+
     QAction* action_convert_relative = new QAction(tr("Convert to &Relative Paths"), this);
     connect(action_convert_relative, &QAction::triggered, m_model, &M3UFileModel::convertToRelativePaths);
     QAction* action_convert_absolute = new QAction(tr("Convert to &Absolute Paths"), this);
@@ -193,6 +217,9 @@ void MainWindow::createActions()
     fileMenu->addSeparator();
     fileMenu->addAction(action_exit);
     QMenu* editMenu = menuBar()->addMenu(tr("&Edit"));
+    editMenu->addAction(action_undo);
+    editMenu->addAction(action_redo);
+    editMenu->addSeparator();
     editMenu->addAction(action_convert_relative);
     editMenu->addAction(action_convert_absolute);
     QMenu* helpMenu = menuBar()->addMenu(tr("&Help"));

@@ -12,11 +12,16 @@
 #pragma warning(pop)
 #endif
 
+#include <deque>
+
 namespace ui {
 
 class M3UFileModel : public QAbstractListModel {
     Q_OBJECT
 private:
+    std::deque<M3UFile> m_undoHistory;
+    std::deque<M3UFile> m_redoHistory;
+    int m_lastInsertIndex;
     M3UFile m_file;
 public:
     M3UFileModel(QObject* parent);
@@ -38,12 +43,17 @@ public:
     QString getFullPath() const;
 signals:
     void pathChanged();
+    void historyChange(bool can_undo, bool can_redo);
 public slots:
     void newFile(QString const& path);
     void openFile(QString const& path);
     void saveFile();
     void convertToRelativePaths();
     void convertToAbsolutePaths();
+    void undo();
+    void redo();
+private:
+    void saveState();
 };
 
 }
