@@ -74,6 +74,7 @@ target_link_libraries(quickm3u PUBLIC
     Qt5::Core
     Qt5::Widgets
 )
+target_link_libraries(quickm3u PUBLIC $<$<PLATFORM_ID:Windows>:Dbghelp>)
 target_sources(quickm3u PUBLIC $<$<CXX_COMPILER_ID:MSVC>:${PROJECT_SOURCE_DIR}/resources/resource.rc>)
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT quickm3u)
