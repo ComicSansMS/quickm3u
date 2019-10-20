@@ -112,5 +112,12 @@ if(WIN32)
     getQt5Dlls(Qt5::Widgets qt_DLLS)
 
     file(COPY ${qt_DLLS} DESTINATION ${PROJECT_BINARY_DIR})
+endif()
 
+install(TARGETS quickm3u DESTINATION .)
+install(FILES $<TARGET_PDB_FILE:quickm3u> DESTINATION . OPTIONAL)
+if(WIN32)
+    find_program(QT5_WINDEPLOYQT windeployqt HINTS ${QT5_BASE_DIR} $ENV{Qt5_ROOT} PATH_SUFFIXES msvc2017_64/bin)
+    mark_as_advanced(QT5_WINDEPLOYQT)
+    install(SCRIPT CODE "execute_process(COMMAND ${QT5_WINDEPLOYQT} ${CMAKE_INSTALL_PREFIX})")
 endif()
