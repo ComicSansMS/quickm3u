@@ -99,10 +99,10 @@ QMimeData* M3UFileModel::mimeData(QModelIndexList const& indices) const
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
     std::size_t n_indices = std::count_if(indices.begin(), indices.end(),
                                           [](QModelIndex const& index) { return index.isValid(); });
-    stream << n_indices;
+    stream << static_cast<quint64>(n_indices);
     for (QModelIndex const& index : indices) {
         if (index.isValid()) {
-            stream << index.row();
+            stream << static_cast<qint32>(index.row());
         }
     }
 
@@ -122,11 +122,13 @@ bool M3UFileModel::dropMimeData(QMimeData const* data, Qt::DropAction action,
         QByteArray raw_data = data->data("application/quickm3u.m3uentry");
         if (!raw_data.isEmpty()) {
             QDataStream stream(&raw_data, QIODevice::ReadOnly);
-            std::size_t n_indices;
+            quint64 n_indices;
             stream >> n_indices;
             std::vector<int> source_rows(n_indices);
             for (int i = 0; i < n_indices; ++i) {
-                stream >> source_rows[i];
+                qint32 tmp;
+                stream >> tmp;
+                source_rows[i] = tmp;
             }
             return gatherRows(source_rows.data(), source_rows.size(), row);
         }

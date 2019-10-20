@@ -25,7 +25,7 @@
 namespace ui {
 
 class AboutDialog : public QDialog {
-    Q_OBJECT;
+    Q_OBJECT
 private:
     QVBoxLayout m_layout;
     QHBoxLayout m_layoutLabels;

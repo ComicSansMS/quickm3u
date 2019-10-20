@@ -44,12 +44,13 @@ void ListView::removeSelectedItems()
 
 void ListView::invertSelection()
 {
-    /// @todo
-    QItemSelectionModel* const smodel = selectionModel();
-    QItemSelection selection = smodel->selection();
     QAbstractItemModel* const imodel = model();
-    selection.select(imodel->index(0, 0), imodel->index(imodel->rowCount(), 0));
-    smodel->select(selection, QItemSelectionModel::SelectionFlag::Select);
+    int const row_count = imodel->rowCount();
+    QModelIndex const first = imodel->index(0, 0);
+    QModelIndex const last = imodel->index(row_count - 1, 0);
+
+    selectionModel()->select(QItemSelection(first, last), QItemSelectionModel::Toggle);
+    setFocus();
 }
 
 void ListView::dragEnterEvent(QDragEnterEvent* evt)
