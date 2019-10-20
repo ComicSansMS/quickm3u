@@ -14,7 +14,7 @@ add_compile_options($<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++>)
 add_link_options($<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++>)
 
 set(QT5_BASE_ROOT "" CACHE PATH "Qt5 installation root directory.")
-find_package(Qt5 REQUIRED COMPONENTS Widgets
+find_package(Qt5 REQUIRED COMPONENTS Svg Widgets
     HINTS ${QT5_BASE_ROOT} $ENV{QT5_ROOT}/msvc2015 $ENV{QT5_ROOT}/msvc2015_64 $ENV{QT5_ROOT}/msvc2017 $ENV{QT5_ROOT}/msvc2017_64
 )
 
@@ -79,8 +79,10 @@ add_executable(quickm3u WIN32
 target_include_directories(quickm3u PUBLIC ${QUICKM3U_SOURCE_DIRECTORY})
 target_link_libraries(quickm3u PUBLIC
     Qt5::Core
+    Qt5::Svg
     Qt5::Widgets
 )
+target_sources(quickm3u PUBLIC $<$<CXX_COMPILER_ID:MSVC>:${PROJECT_SOURCE_DIR}/resources/resource.rc>)
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT quickm3u)
 

@@ -35,9 +35,7 @@ AboutDialog::AboutDialog(QWidget* parent)
 {
     setWindowTitle("About QuickM3U");
 
-    //QPixmap img;
-    //img.load(":/todo.ico");
-    //m_labelImage->setPixmap(img.scaled(QSize(128, 128), Qt::KeepAspectRatio));
+    m_labelImage->setPixmap(QPixmap(":/logo_128.png"));
 
     m_labelText->setText(QString(
         "<b>QuickM3U Version %1.%2.%3</b><br/>"

@@ -11,6 +11,7 @@
 *.qrc text
 *.html text
 *.json text
+*.rc   text
 
 # Declare files that will always have CRLF line endings on checkout.
 *.sln text eol=crlf
@@ -19,3 +20,4 @@
 *.png binary
 *.jpg binary
 *.ico binary
+*.svg binary
