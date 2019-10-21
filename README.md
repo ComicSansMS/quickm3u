@@ -6,9 +6,13 @@ A minimalistic editor for M3U multimedia playlists.
 
 ![QuickM3U Logo](https://github.com/ComicSansMS/quickm3u/raw/master/resources/logo_128.png "QuickM3U")
 
-## Download Latest Builds
+## Downloads
 
- * [Windows x64](https://ci.appveyor.com/api/buildjobs/3mibb2v6l0yhw3u6/artifacts/quickm3u.zip)
+### Latest Builds (unstable)
+
+Note that these might be down while a build is running or if the current master is broken.
+
+ * [Windows x64](https://ci.appveyor.com/project/ComicSansMS/quickm3u/build/artifacts)
 
 ## Open Issues
 
