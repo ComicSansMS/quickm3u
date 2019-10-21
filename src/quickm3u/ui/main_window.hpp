@@ -33,6 +33,8 @@ private:
 public:
     MainWindow();
 
+    void openFile(QString const& path);
+
 public slots:
     void onNewFile();
     void onOpenFile();

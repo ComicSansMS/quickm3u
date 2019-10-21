@@ -50,6 +50,11 @@ MainWindow::MainWindow()
         });
 }
 
+void MainWindow::openFile(QString const& path)
+{
+    doOpenFile(path);
+}
+
 void MainWindow::onNewFile()
 {
     auto const target_file = QFileDialog::getSaveFileName(this, tr("New M3U File"), QString(),
