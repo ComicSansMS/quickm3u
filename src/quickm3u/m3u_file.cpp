@@ -21,6 +21,7 @@ void to_absolute_path(std::filesystem::path const& root, M3UEntry& entry)
 
 M3UFile m3u_load(std::filesystem::path const& p)
 {
+    /// @todo error handling
     std::ifstream fin(p);
     M3UFile ret = m3u_load(fin);
     ret.filename = p;

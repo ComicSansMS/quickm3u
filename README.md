@@ -12,7 +12,7 @@ A minimalistic editor for M3U multimedia playlists.
 
 Note that these might be down while a build is running or if the current master is broken.
 
- * [Windows x64](https://ci.appveyor.com/project/ComicSansMS/quickm3u/build/artifacts)
+ * [Windows](https://ci.appveyor.com/project/ComicSansMS/quickm3u/build/artifacts)
 
 ## Open Issues
 

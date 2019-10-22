@@ -11,6 +11,7 @@
 #endif
 #include <QMimeData>
 
+#include <limits>
 #include <unordered_set>
 
 namespace ui {
@@ -33,7 +34,7 @@ int M3UFileModel::rowCount(QModelIndex const& parent) const
 QVariant M3UFileModel::data(QModelIndex const& index, int role) const
 {
     int const row_index = index.row();
-    if (index.isValid() && (row_index < m_file.entries.size())) {
+    if (index.isValid() && (row_index < static_cast<int>(m_file.entries.size()))) {
         if ((role == Qt::DisplayRole) || (role == Qt::EditRole)) {
             return QString::fromStdU16String(m_file.entries[row_index].path.u16string());
         }
@@ -44,7 +45,7 @@ QVariant M3UFileModel::data(QModelIndex const& index, int role) const
 bool M3UFileModel::setData(QModelIndex const& index, QVariant const& value, int role)
 {
     int const row_index = index.row();
-    if (index.isValid() && (row_index < m_file.entries.size())) {
+    if (index.isValid() && (row_index < static_cast<int>(m_file.entries.size()))) {
         if ((role == Qt::DisplayRole) || (role == Qt::EditRole)) {
             if (m_lastInsertIndex == index.row()) {
                 // call is part of a drag-n-drop action. drop state previously saved by insertRows().
@@ -62,7 +63,11 @@ bool M3UFileModel::setData(QModelIndex const& index, QVariant const& value, int 
 
 bool M3UFileModel::insertRows(int row, int count, QModelIndex const& parent)
 {
-    if (parent.isValid() || count < 1 || row < 0 || row > m_file.entries.size()) {
+    if (parent.isValid() || count < 1 || row < 0 || row > static_cast<int>(m_file.entries.size())) {
+        return false;
+    }
+    if (m_file.entries.size() + count >= static_cast<std::size_t>(std::numeric_limits<int>::max())) {
+        // limit number of entries to stay addressable by Qt indices
         return false;
     }
 
@@ -76,7 +81,7 @@ bool M3UFileModel::insertRows(int row, int count, QModelIndex const& parent)
 
 bool M3UFileModel::removeRows(int row, int count, QModelIndex const& parent)
 {
-    if (parent.isValid() || row < 0 || row + count > m_file.entries.size()) {
+    if (parent.isValid() || row < 0 || row + count > static_cast<int>(m_file.entries.size())) {
         return false;
     }
 
@@ -110,7 +115,7 @@ QMimeData* M3UFileModel::mimeData(QModelIndexList const& indices) const
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
     std::size_t n_indices = std::count_if(indices.begin(), indices.end(),
                                           [](QModelIndex const& index) { return index.isValid(); });
-    stream << static_cast<quint64>(n_indices);
+    stream << static_cast<quint32>(n_indices);
     for (QModelIndex const& index : indices) {
         if (index.isValid()) {
             stream << static_cast<qint32>(index.row());
@@ -133,10 +138,10 @@ bool M3UFileModel::dropMimeData(QMimeData const* data, Qt::DropAction action,
         QByteArray raw_data = data->data("application/quickm3u.m3uentry");
         if (!raw_data.isEmpty()) {
             QDataStream stream(&raw_data, QIODevice::ReadOnly);
-            quint64 n_indices;
+            quint32 n_indices;
             stream >> n_indices;
             std::vector<int> source_rows(n_indices);
-            for (int i = 0; i < n_indices; ++i) {
+            for (quint32 i = 0; i < n_indices; ++i) {
                 qint32 tmp;
                 stream >> tmp;
                 source_rows[i] = tmp;
@@ -200,8 +205,13 @@ void M3UFileModel::newFile(QString const& path)
 
 void M3UFileModel::openFile(QString const& path)
 {
+    M3UFile loaded_file = m3u_load(path.toStdU16String());
+    if (loaded_file.entries.size() >= static_cast<std::size_t>(std::numeric_limits<int>::max())) {
+        // limit number of entries to stay addressable by Qt indices
+        return;
+    }
     beginResetModel();
-    m_file = m3u_load(path.toStdU16String());
+    m_file = std::move(loaded_file);
     endResetModel();
     m_undoHistory.clear();
     m_redoHistory.clear();
