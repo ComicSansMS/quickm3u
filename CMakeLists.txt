@@ -13,6 +13,12 @@ add_compile_options($<$<CXX_COMPILER_ID:GNU,AppleClang,Clang>:-pedantic>)
 add_compile_options($<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++>)
 add_link_options($<$<CXX_COMPILER_ID:Clang>:-stdlib=libc++>)
 
+option(TREAT_WARNINGS_AS_ERRORS "Builds with warnings as errors" OFF)
+if(TREAT_WARNINGS_AS_ERRORS)
+    add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/WX>)
+    add_compile_options($<$<CXX_COMPILER_ID:GNU,AppleClang,Clang>:-Werror>)
+endif()
+
 set(QT5_BASE_ROOT "" CACHE PATH "Qt5 installation root directory.")
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(QT5_HINTS $ENV{QT5_ROOT}/msvc2017_64)
