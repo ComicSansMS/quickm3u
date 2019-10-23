@@ -21,12 +21,12 @@ endif()
 
 set(QT5_BASE_ROOT "" CACHE PATH "Qt5 installation root directory.")
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(QT5_HINTS $ENV{QT5_ROOT}/msvc2017_64)
+    set(QT5_PATH_SUFFIX msvc2017_64)
 elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-    set(QT5_HINTS $ENV{QT5_ROOT}/msvc2017)
+    set(QT5_PATH_SUFFIX msvc2017)
 endif()
 find_package(Qt5 REQUIRED COMPONENTS Widgets
-    HINTS ${QT5_BASE_ROOT} ${QT5_HINTS}
+    HINTS ${QT5_BASE_ROOT} $ENV{QT5_ROOT}/${QT5_PATH_SUFFIX}
 )
 
 set(QUICKM3U_SOURCE_DIRECTORY ${PROJECT_SOURCE_DIR}/src)
@@ -129,7 +129,7 @@ endif()
 install(TARGETS quickm3u DESTINATION .)
 install(FILES $<TARGET_PDB_FILE:quickm3u> DESTINATION . OPTIONAL)
 if(WIN32)
-    find_program(QT5_WINDEPLOYQT windeployqt HINTS ${QT5_BASE_DIR} $ENV{Qt5_ROOT} PATH_SUFFIXES msvc2017_64/bin)
+    find_program(QT5_WINDEPLOYQT windeployqt HINTS ${QT5_BASE_DIR} $ENV{Qt5_ROOT} PATH_SUFFIXES ${QT5_PATH_SUFFIX}/bin)
     mark_as_advanced(QT5_WINDEPLOYQT)
     install(SCRIPT CODE "execute_process(COMMAND ${QT5_WINDEPLOYQT} ${CMAKE_INSTALL_PREFIX})")
 endif()
