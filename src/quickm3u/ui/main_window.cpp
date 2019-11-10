@@ -206,7 +206,7 @@ void MainWindow::createActions()
     m_actions.redo = action_redo;
     action_redo->setEnabled(false);
 
-    QAction* action_convert_relative = new QAction(tr("Convert to &Relative Paths"), this);
+    QAction* action_convert_relative = new QAction(tr("Convert to R&elative Paths"), this);
     connect(action_convert_relative, &QAction::triggered, m_model, &M3UFileModel::convertToRelativePaths);
     QAction* action_convert_absolute = new QAction(tr("Convert to &Absolute Paths"), this);
     connect(action_convert_absolute, &QAction::triggered, m_model, &M3UFileModel::convertToAbsolutePaths);

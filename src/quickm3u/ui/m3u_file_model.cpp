@@ -257,6 +257,7 @@ void M3UFileModel::convertToAbsolutePaths()
 
 void M3UFileModel::undo()
 {
+    ///@ todo how to group changes that belong semantically to the same undo action (eg. delete multiple entries)
     m_redoHistory.emplace_back(std::move(m_undoHistory.back()));
     m_undoHistory.pop_back();
     beginResetModel();

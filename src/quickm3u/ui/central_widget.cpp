@@ -18,10 +18,10 @@ namespace ui {
 
 CentralWidget::CentralWidget(QWidget* parent)
     :QWidget(parent), m_labelFilePath(new QLabel(this)), m_list(new ListView(this)),
-     m_buttonAddFiles(new QPushButton(tr("Add Files..."), this)),
-     m_buttonAddCustom(new QPushButton(tr("Add Custom Entry..."), this)),
+     m_buttonAddFiles(new QPushButton(tr("&Add Files..."), this)),
+     m_buttonAddCustom(new QPushButton(tr("Add &Custom Entry..."), this)),
      m_buttonRemoveSelected(new QPushButton(tr("Remove Selected"), this)),
-     m_buttonInvertSelection(new QPushButton(tr("Invert Selection"), this))
+     m_buttonInvertSelection(new QPushButton(tr("&Invert Selection"), this))
 {
     m_layout.addWidget(m_labelFilePath);
     m_layout.addWidget(m_list);
