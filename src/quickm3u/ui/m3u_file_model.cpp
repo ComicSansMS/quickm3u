@@ -47,14 +47,10 @@ bool M3UFileModel::setData(QModelIndex const& index, QVariant const& value, int 
     int const row_index = index.row();
     if (index.isValid() && (row_index < static_cast<int>(m_file.entries.size()))) {
         if ((role == Qt::DisplayRole) || (role == Qt::EditRole)) {
-            if (m_lastInsertIndex == index.row()) {
-                // call is part of a drag-n-drop action. drop state previously saved by insertRows().
-                m_undoHistory.pop_back();
-            }
-            saveState();
             m_file.entries[row_index] = M3UEntry{};
             m_file.entries[row_index].path = value.toString().toStdU16String();
             m_file.entries[row_index].path.make_preferred();
+            saveState();
             emit dataChanged(index, index);
         }
     }
@@ -71,7 +67,6 @@ bool M3UFileModel::insertRows(int row, int count, QModelIndex const& parent)
         return false;
     }
 
-    saveState();
     m_lastInsertIndex = row;
     beginInsertRows(QModelIndex(), row, row + count - 1);
     m_file.entries.insert(begin(m_file.entries) + row, count, M3UEntry{});
@@ -85,12 +80,12 @@ bool M3UFileModel::removeRows(int row, int count, QModelIndex const& parent)
         return false;
     }
 
-    saveState();
     beginRemoveRows(parent, row, row + count - 1);
     auto const it_erase_begin = begin(m_file.entries) + row;
     auto const it_erase_end = it_erase_begin + count;
     m_file.entries.erase(it_erase_begin, it_erase_end);
     endRemoveRows();
+    saveState();
     return true;
 }
 
@@ -156,7 +151,6 @@ bool M3UFileModel::dropMimeData(QMimeData const* data, Qt::DropAction action,
 
 bool M3UFileModel::gatherRows(int* source_rows_ptr, std::size_t source_rows_size, int destination_row)
 {
-    saveState();
     std::size_t const n_elements = m_file.entries.size();
     std::vector<int> indices(n_elements);
     std::iota(begin(indices), end(indices), 0);
@@ -176,6 +170,7 @@ bool M3UFileModel::gatherRows(int* source_rows_ptr, std::size_t source_rows_size
         m_file.entries.push_back(std::move(old_entries[i]));
     }
     endResetModel();
+    saveState();
 
     return true;
 }
@@ -199,6 +194,7 @@ void M3UFileModel::newFile(QString const& path)
     endResetModel();
     m_undoHistory.clear();
     m_redoHistory.clear();
+    saveState();
     emit pathChanged();
     emit historyChange(false, false);
 }
@@ -226,6 +222,7 @@ void M3UFileModel::openFile(QString const& path)
     endResetModel();
     m_undoHistory.clear();
     m_redoHistory.clear();
+    saveState();
     emit pathChanged();
     emit historyChange(false, false);
 }
@@ -244,33 +241,33 @@ void M3UFileModel::saveFile()
 
 void M3UFileModel::convertToRelativePaths()
 {
-    saveState();
     beginResetModel();
     m3u_convert_to_relative_paths(m_file);
     endResetModel();
+    saveState();
 }
 
 void M3UFileModel::convertToAbsolutePaths()
 {
-    saveState();
     beginResetModel();
     m3u_convert_to_absolute_paths(m_file);
     endResetModel();
+    saveState();
 }
 
 void M3UFileModel::undo()
 {
-    m_redoHistory.emplace_back(std::move(m_file));
-    beginResetModel();
-    m_file = std::move(m_undoHistory.back());
-    endResetModel();
+    m_redoHistory.emplace_back(std::move(m_undoHistory.back()));
     m_undoHistory.pop_back();
-    emit historyChange(!m_undoHistory.empty(), true);
+    beginResetModel();
+    m_file = m_undoHistory.back();
+    endResetModel();
+    emit historyChange((m_undoHistory.size() > 1), true);
 }
 
 void M3UFileModel::redo()
 {
-    m_undoHistory.emplace_back(std::move(m_file));
+    m_undoHistory.emplace_back(m_redoHistory.back());
     beginResetModel();
     m_file = std::move(m_redoHistory.back());
     endResetModel();
