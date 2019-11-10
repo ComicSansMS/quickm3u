@@ -17,7 +17,7 @@
 namespace ui {
 
 M3UFileModel::M3UFileModel(QObject* parent)
-    :QAbstractListModel(parent), m_lastInsertIndex(-1)
+    :QAbstractListModel(parent), m_lastInsertIndex(-1), m_limitUndoHistory(1024)
 {}
 
 Qt::ItemFlags M3UFileModel::flags(QModelIndex const& /* index */) const
@@ -343,8 +343,8 @@ void M3UFileModel::copyFilesToDirectory(QString destination_path)
 
 void M3UFileModel::saveState()
 {
-    if (!m_undoHistory.empty() && (m_file == m_undoHistory.back())) {
-        return;
+    if (m_undoHistory.size() > m_limitUndoHistory) {
+        m_undoHistory.pop_front();
     }
     m_lastInsertIndex = -1;
     m_undoHistory.push_back(m_file);

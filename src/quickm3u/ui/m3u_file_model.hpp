@@ -23,6 +23,7 @@ private:
     std::deque<M3UFile> m_redoHistory;
     int m_lastInsertIndex;
     M3UFile m_file;
+    int m_limitUndoHistory;
 public:
     M3UFileModel(QObject* parent);
 
