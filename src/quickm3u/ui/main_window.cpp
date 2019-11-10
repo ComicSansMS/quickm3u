@@ -198,11 +198,13 @@ void MainWindow::createActions()
     action_undo->setShortcut(QKeySequence::Undo);
     connect(action_undo, &QAction::triggered, this, &MainWindow::onUndo);
     m_actions.undo = action_undo;
+    action_undo->setEnabled(false);
 
     QAction* action_redo = new QAction(tr("&Redo"), this);
     action_redo->setShortcut(QKeySequence::Redo);
     connect(action_redo, &QAction::triggered, this, &MainWindow::onRedo);
     m_actions.redo = action_redo;
+    action_redo->setEnabled(false);
 
     QAction* action_convert_relative = new QAction(tr("Convert to &Relative Paths"), this);
     connect(action_convert_relative, &QAction::triggered, m_model, &M3UFileModel::convertToRelativePaths);

@@ -71,7 +71,6 @@ void CentralWidget::onAddCustom()
     if (is_ok) {
         m_list->addItem(e);
     }
-
 }
 
 void CentralWidget::onRemoveSelected()
