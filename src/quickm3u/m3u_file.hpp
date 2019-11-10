@@ -22,6 +22,9 @@ struct M3UFile {
 };
 
 M3UFile m3u_load(std::filesystem::path const& p);
+/**
+ * No error checking is performed by this function.
+ */
 M3UFile m3u_load(std::istream& is);
 void m3u_save(M3UFile const& m3u);
 void m3u_save(M3UFile const& m3u, std::ostream& os);

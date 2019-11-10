@@ -21,9 +21,10 @@ void to_absolute_path(std::filesystem::path const& root, M3UEntry& entry)
 
 M3UFile m3u_load(std::filesystem::path const& p)
 {
-    /// @todo error handling
     std::ifstream fin(p);
+    if (!fin) { throw std::ios_base::failure("Unable to open file."); }
     M3UFile ret = m3u_load(fin);
+    if (!fin.eof()) { throw std::ios_base::failure("Error reading file."); }
     ret.filename = p;
     ret.filename.make_preferred();
     return ret;
@@ -66,7 +67,10 @@ M3UFile m3u_load(std::istream& is)
 
 void m3u_save(M3UFile const& m3u)
 {
+    /// @todo save saving - prevent loss of information in case of failure on save
     std::ofstream fout(m3u.filename);
+    if (!fout) { throw std::ios_base::failure("Unable to save file."); }
+    fout.exceptions(std::ios_base::badbit | std::ios_base::failbit);
     m3u_save(m3u, fout);
 }
 

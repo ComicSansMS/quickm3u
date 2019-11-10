@@ -205,9 +205,20 @@ void M3UFileModel::newFile(QString const& path)
 
 void M3UFileModel::openFile(QString const& path)
 {
-    M3UFile loaded_file = m3u_load(path.toStdU16String());
+    M3UFile loaded_file;
+    try {
+        loaded_file = m3u_load(path.toStdU16String());
+    } catch (...) {
+        QMessageBox msg(QMessageBox::Critical, tr("Error opening file."),
+            tr("File %1 could not be opened.").arg(path), QMessageBox::Ok);
+        msg.exec();
+        return;
+    }
     if (loaded_file.entries.size() >= static_cast<std::size_t>(std::numeric_limits<int>::max())) {
-        // limit number of entries to stay addressable by Qt indices
+        QMessageBox msg(QMessageBox::Critical, tr("Error opening file."),
+            tr("File %1 contains too many entries to be opened.").arg(path), QMessageBox::Ok);
+        msg.exec();
+        return;
         return;
     }
     beginResetModel();
@@ -221,7 +232,14 @@ void M3UFileModel::openFile(QString const& path)
 
 void M3UFileModel::saveFile()
 {
-    m3u_save(m_file);
+    try {
+        m3u_save(m_file);
+    } catch (...) {
+        QMessageBox msg(QMessageBox::Critical, tr("Error saving file."),
+            tr("File %1 could not be saved.").arg(m_file.filename.u16string()), QMessageBox::Ok);
+        msg.exec();
+        return;
+    }
 }
 
 void M3UFileModel::convertToRelativePaths()
@@ -318,6 +336,10 @@ void M3UFileModel::copyFilesToDirectory(QString destination_path)
     if (errors_occurred) {
         QMessageBox msg(QMessageBox::Warning, tr("Some files could not be copied."),
             tr("Some files could not be copied to the destination."), QMessageBox::Ok);
+        msg.exec();
+    } else {
+        QMessageBox msg(QMessageBox::Information, tr("All files have been copied."),
+            tr("All files have been copied successfully."), QMessageBox::Ok);
         msg.exec();
     }
 }
