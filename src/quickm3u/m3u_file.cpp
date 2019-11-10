@@ -56,7 +56,7 @@ M3UFile m3u_load(std::istream& is)
                 }
             }
         } else {
-            entry.path = line;
+            entry.path = std::filesystem::path(reinterpret_cast<char8_t const*>(line.data()));
             ret.entries.emplace_back(std::move(entry));
             entry = M3UEntry{};
         }
@@ -69,15 +69,17 @@ void m3u_save(M3UFile const& m3u)
 {
     /// @todo save saving - prevent loss of information in case of failure on save
     std::ofstream fout(m3u.filename);
-    if (!fout) { throw std::ios_base::failure("Unable to save file."); }
-    fout.exceptions(std::ios_base::badbit | std::ios_base::failbit);
+    if (!fout) { throw std::ios_base::failure("Unable to open file for saving."); }
     m3u_save(m3u, fout);
+    if (!fout) { throw std::ios_base::failure("Error while saving file."); }
 }
 
 void m3u_save(M3UFile const& m3u, std::ostream& os)
 {
     for (auto const& p : m3u.entries) {
-        os << p.path.string() << '\n';
+        std::u8string const path =  p.path.u8string();
+        os.write(reinterpret_cast<char const*>(path.data()), path.size());
+        os.put('\n');
     }
 }
 
