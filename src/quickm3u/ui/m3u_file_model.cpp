@@ -215,7 +215,6 @@ void M3UFileModel::openFile(QString const& path)
             tr("File %1 contains too many entries to be opened.").arg(path), QMessageBox::Ok);
         msg.exec();
         return;
-        return;
     }
     beginResetModel();
     m_file = std::move(loaded_file);
@@ -344,7 +343,7 @@ void M3UFileModel::copyFilesToDirectory(QString destination_path)
 
 void M3UFileModel::saveState()
 {
-    if (m_undoHistory.size() > m_limitUndoHistory) {
+    if (m_undoHistory.size() > static_cast<std::size_t>(m_limitUndoHistory)) {
         m_undoHistory.pop_front();
     }
     m_lastInsertIndex = -1;
