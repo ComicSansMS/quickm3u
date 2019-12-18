@@ -288,7 +288,7 @@ void M3UFileModel::copyFilesToDirectory(QString destination_path)
         }
         return digits;
     }(n_files);
-    int count = 0;
+    int count = 1;
     std::filesystem::path dest_dir = destination_path.toStdU16String();
     std::vector<std::tuple<std::filesystem::path, std::filesystem::path>> to_copy;
     bool overwrite = false;
