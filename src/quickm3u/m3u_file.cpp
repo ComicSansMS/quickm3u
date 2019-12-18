@@ -56,7 +56,12 @@ M3UFile m3u_load(std::istream& is)
                 }
             }
         } else {
-            entry.path = std::filesystem::path(reinterpret_cast<char8_t const*>(line.data()));
+            try {
+                entry.path = std::filesystem::path(reinterpret_cast<char8_t const*>(line.data()));
+            } catch(std::system_error&) {
+                // in case of non-utf encoded m3u files we end up here - try local codepage instead
+                entry.path = std::filesystem::path(line.data());
+            }
             ret.entries.emplace_back(std::move(entry));
             entry = M3UEntry{};
         }
